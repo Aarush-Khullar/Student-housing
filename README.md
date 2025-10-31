@@ -11,3 +11,5 @@ The system should:
 2)Suggest housing matches based on profile compatibility (for example, matching housing preferences, ensuring different universities, and considering availability).
 
 3)Enable basic messaging between matched users within the console.
+
+Implementing using 3 file structure 
