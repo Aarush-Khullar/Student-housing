@@ -1,41 +1,67 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "student.h"
+#include "housing.h"
 
 int main() {
-    int choice;
+    // Initialize the system struct. No global variables.
+    AppSystem system = {0}; // Zeros all fields
+    system.nextUserId = 1; // Start user IDs from 1
+
+    User* loggedInUser = NULL;
+    int choice = 0;
+
+    printf("Welcome to the Inter-University Housing Matcher!\n");
+
     while (1) {
-        printf("\n--- Student Management System ---\n");
-        printf("1. Add Student\n");
-        printf("2. View Students\n");
-        printf("3. Search Student\n");
-        printf("4. Update Student\n");
-        printf("5. Delete Student\n");
-        printf("6. Exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
+        printMainMenu();
+        choice = getMenuChoice();
 
         switch (choice) {
-            case 1: 
-                addStudent(); 
+            case 1: // Create Profile
+                promptToCreateProfile(&system);
+                loggedInUser = NULL; // Force re-login
                 break;
-            case 2: 
-                viewStudents(); 
+            case 2: // Log In
+                loggedInUser = promptForLogin(&system);
+                if (loggedInUser != NULL) {
+                    printf("\nWelcome, %s!\n", loggedInUser->name);
+                }
                 break;
-            case 3: 
-                searchStudent(); 
+            case 3: // View My Profile
+                if (loggedInUser) {
+                    displayUserProfile(loggedInUser);
+                } else {
+                    printf("You must be logged in to view a profile.\n");
+                }
                 break;
-            case 4: 
-                updateStudent(); 
+            case 4: // Find Matches
+                if (loggedInUser) {
+                    displayMatches(&system, loggedInUser);
+                } else {
+                    printf("You must be logged in to find matches.\n");
+                }
                 break;
-            case 5: 
-                deleteStudent(); 
+            case 5: // Send Message
+                if (loggedInUser) {
+                    promptToSendMessage(&system, loggedInUser->id);
+                } else {
+                    printf("You must be logged in to send messages.\n");
+                }
                 break;
-            case 6: 
-                exit(0);
-            default: 
-                printf("Invalid choice!\n");
+            case 6: // View Messages
+                if (loggedInUser) {
+                    displayMessages(loggedInUser);
+                } else {
+                    printf("You must be logged in to view messages.\n");
+                }
+                break;
+            case 7: // Exit
+                cleanupAndExit(&system);
+                break;
+            default:
+                printf("Invalid choice. Please enter a number from 1 to 7.\n");
+                break;
         }
     }
+
+    // This line is unreachable due to cleanupAndExit()
     return 0;
 }
